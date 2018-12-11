@@ -1,0 +1,27 @@
+.fullscreen {
+  background-color: #FAFAFA;
+  border-top: none;
+  background-position: center;
+  background-size: cover;
+}
+
+.fullscreen .remark-slide-number {
+  display: none;
+}
+
+.text-white {
+  color: #FFF;
+}
+
+.text-black {
+  color: #000;
+}
+
+
+.huge {
+  font-size: 2em;
+}
+
+.font250 {
+  font-size: 250%;
+}

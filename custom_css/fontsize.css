@@ -1,0 +1,6 @@
+/* metropolis theme has custom classes built-in for font sizes */
+/* Usage: .font20[], .font30[], etc */
+
+.large { font-size: 130% }
+.small { font-size: 70% }
+.tiny { font-size: 40% }

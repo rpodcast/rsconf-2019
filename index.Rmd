@@ -1,0 +1,139 @@
+---
+title: "Effective use of Shiny modules"
+subtitle: "rstudio::conf 2019 (very rough draft)"
+author: "Eric Nantz"
+date: "2019/1/17"
+output:
+  xaringan::moon_reader:
+    lib_dir: libs
+    css: [default, metropolis, metropolis-fonts, "custom_css/footer.css", "custom_css/misc.css", "custom_css/animate.css"]
+    nature:
+      ratio: 16:9
+      beforeInit: "macros.js"
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+---
+
+```{r setup, include=FALSE}
+options(htmltools.dir.version = FALSE)
+
+footer_spacing <- function(left_spaces = 20, 
+                           right_spaces = 8,
+                           center_title = "Effective use of Shiny Modules",
+                           left_title = "bit.ly/modules2019",
+                           right_title = "rstudio::conf 2019", 
+                           footer_class = "my-footer") {
+  footer_content <- paste0(left_title, paste(rep("&emsp", left_spaces), collapse=";"), ";", center_title, paste(rep("&emsp", right_spaces), collapse=";"),  ";", right_title)
+  glue::glue('<div class="{footer_class}"><span>{footer_content}</span></div>')
+}
+
+r_logo <- function(colour = "#384CB7") {
+  icon::fa_r_project(colour = colour)
+}
+```
+
+layout: true
+
+`r footer_spacing(left_spaces = 30, right_spaces = 24)` 
+
+---
+
+# Theme brainstorm
+
+* R is so appealing in data science as it gives you a quick way to prototype and perform analyses 
+* Once you begin to develop Shiny, it is advantageous to adopt software engineering best practices
+* Modules are a key feature to help facilitate software engineering when developing shiny apps
+* Trying to create pieces (modules) that are individually understandable and connect them in reliable ways
+
+---
+class: fullscreen, inverse, center, text-black
+
+.font250[**My Journey with Modules**]
+
+---
+
+# Climbing the Shiny Ladder
+
+* Early adopter when Shiny was released to CRAN
+* Began with small prototypes, showcasing the possibilities
+* Next level: Shiny as frontend to sophisticated internal analysis pipelines
+
+---
+
+# Case 1: Frontend to subgroup identification
+
+* Internal R package with algorithm to identify subgroups with better response compared to overall
+* Package is now on CRAN (add link to TSDT package) <https://cran.rstudio.com/web/packages/TSDT/>
+* Shiny empowered statisticians with little R experience to apply package on real data sets
+* Many parts to app:
+    + Persistent sessions (precursor to Shiny bookmarkable state)
+    + Data loader and variable assignment
+    + Algorithm parameter settings
+    + Execute algorithm on HPC cluster
+    + Post-process results with dynamic graphics and summary tables
+    
+__Difficulties__
+
+* Duplicated similar(ish) UI widgets across different pieces
+* Code organization (link to scattered noodle pic from one of Ian Lyttle's presentations)
+* Extending capabilities was challenging
+
+Modules could help with many of these issues
+
+---
+
+# What is a module?
+
+* Set of R functions optimized for Shiny applications, typically composed of user-interface and server-side logic
+* Avoid namespace collisions when using same widget across different parts of your app
+* Allows you to  __compartmentalize__ distinct app components
+
+---
+
+# Basic Example
+
+Use modules from first article (variable chooser and scatterplot)
+* Only one plot for simplicity
+* Variable select: Demonstrates simple UI (two select inputs)
+* Plot module: Demonstrates displaying output based on input parameters
+
+---
+
+# Why should we care?
+
+- Avoid namespace collisions (apply widget multiple times with little overhead)
+- Organize code into logical and easy-to-understand components
+- Facilitates collaboration (different pieces can be developed independently)
+- Enables software engineering best practices (needs rewording)
+
+---
+
+# Learning Modules
+
+- I started using modules in basic ways (apps with maybe 1-2 modules reused in different parts)
+- More for display and having convenient UI widgets
+- Over time: Complex applications with many modules (20 plus)
+    + Forced to think carefully about orchestration & how to reliably link (compose) modules together
+    + (pic of music conductor? maybe too corny)
+
+---
+
+# Roadmap for using modules in complex apps
+
+1. Creating and using simple modules occassionally
+2. Communication among modules (receiving input and returning output)
+3. Communication between sibling modules (parent in charge)
+4. (May not include0) Modules that use other modules as inputs / parameters
+
+---
+
+# Introduce example app scenario
+
+Ames Housing explorer
+* Side-by-side scatterplots, each with potentially different variables selected for the X and Y axes
+* Ability to select particular data points in the scatterplots via interactive [plot brushing](http://shiny.rstudio.com/articles/selecting-rows-of-data.html)
+* View key variables associated with the selected data points within a [DT](https://rstudio.github.io/DT/) data table below the plots
+* Optionally add annotations of the total sales price to the points in the scatterplot corresponding to the rows currently viewed in the data table
+
+

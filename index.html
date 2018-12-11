@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Effective use of Shiny modules</title>
+    <meta charset="utf-8">
+    <meta name="author" content="Eric Nantz" />
+    <link href="libs/remark-css/default.css" rel="stylesheet" />
+    <link href="libs/remark-css/metropolis.css" rel="stylesheet" />
+    <link href="libs/remark-css/metropolis-fonts.css" rel="stylesheet" />
+    <link rel="stylesheet" href="custom_css/footer.css" type="text/css" />
+    <link rel="stylesheet" href="custom_css/misc.css" type="text/css" />
+    <link rel="stylesheet" href="custom_css/animate.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+# Effective use of Shiny modules
+## rstudio::conf 2019 (very rough draft)
+### Eric Nantz
+### 2019/1/17
+
+---
+
+
+
+
+layout: true
+
+&lt;div class="my-footer"&gt;&lt;span&gt;bit.ly/modules2019&amp;emsp;&amp;emsp;&amp;emsp;&amp;emsp;&amp;emsp;&amp;emsp;&amp;emsp;&amp;emsp;&amp;emsp;&amp;emsp;&amp;emsp;&amp;emsp;&amp;emsp;&amp;emsp;&amp;emsp;&amp;emsp;&amp;emsp;&amp;emsp;&amp;emsp;&amp;emsp;&amp;emsp;&amp;emsp;&amp;emsp;&amp;emsp;&amp;emsp;&amp;emsp;&amp;emsp;&amp;emsp;&amp;emsp;&amp;emsp;Effective use of Shiny Modules&amp;emsp;&amp;emsp;&amp;emsp;&amp;emsp;&amp;emsp;&amp;emsp;&amp;emsp;&amp;emsp;&amp;emsp;&amp;emsp;&amp;emsp;&amp;emsp;&amp;emsp;&amp;emsp;&amp;emsp;&amp;emsp;&amp;emsp;&amp;emsp;&amp;emsp;&amp;emsp;&amp;emsp;&amp;emsp;&amp;emsp;&amp;emsp;rstudio::conf 2019&lt;/span&gt;&lt;/div&gt; 
+
+---
+
+# Theme brainstorm
+
+* R is so appealing in data science as it gives you a quick way to prototype and perform analyses 
+* Once you begin to develop Shiny, it is advantageous to adopt software engineering best practices
+* Modules are a key feature to help facilitate software engineering when developing shiny apps
+* Trying to create pieces (modules) that are individually understandable and connect them in reliable ways
+
+---
+class: fullscreen, inverse, center, text-black
+
+.font250[**My Journey with Modules**]
+
+---
+
+# Climbing the Shiny Ladder
+
+* Early adopter when Shiny was released to CRAN
+* Began with small prototypes, showcasing the possibilities
+* Next level: Shiny as frontend to sophisticated internal analysis pipelines
+
+---
+
+# Case 1: Frontend to subgroup identification
+
+* Internal R package with algorithm to identify subgroups with better response compared to overall
+* Package is now on CRAN (add link to TSDT package) &lt;https://cran.rstudio.com/web/packages/TSDT/&gt;
+* Shiny empowered statisticians with little R experience to apply package on real data sets
+* Many parts to app:
+    + Persistent sessions (precursor to Shiny bookmarkable state)
+    + Data loader and variable assignment
+    + Algorithm parameter settings
+    + Execute algorithm on HPC cluster
+    + Post-process results with dynamic graphics and summary tables
+    
+__Difficulties__
+
+* Duplicated similar(ish) UI widgets across different pieces
+* Code organization (link to scattered noodle pic from one of Ian Lyttle's presentations)
+* Extending capabilities was challenging
+
+Modules could help with many of these issues
+
+---
+
+# What is a module?
+
+* Set of R functions optimized for Shiny applications, typically composed of user-interface and server-side logic
+* Avoid namespace collisions when using same widget across different parts of your app
+* Allows you to  __compartmentalize__ distinct app components
+
+---
+
+# Basic Example
+
+Use modules from first article (variable chooser and scatterplot)
+* Only one plot for simplicity
+* Variable select: Demonstrates simple UI (two select inputs)
+* Plot module: Demonstrates displaying output based on input parameters
+
+---
+
+# Why should we care?
+
+- Avoid namespace collisions (apply widget multiple times with little overhead)
+- Organize code into logical and easy-to-understand components
+- Facilitates collaboration (different pieces can be developed independently)
+- Enables software engineering best practices (needs rewording)
+
+---
+
+# Learning Modules
+
+- I started using modules in basic ways (apps with maybe 1-2 modules reused in different parts)
+- More for display and having convenient UI widgets
+- Over time: Complex applications with many modules (20 plus)
+    + Forced to think carefully about orchestration &amp; how to reliably link (compose) modules together
+    + (pic of music conductor? maybe too corny)
+
+---
+
+# Roadmap for using modules in complex apps
+
+1. Creating and using simple modules occassionally
+2. Communication among modules (receiving input and returning output)
+3. Communication between sibling modules (parent in charge)
+4. (May not include0) Modules that use other modules as inputs / parameters
+
+---
+
+# Introduce example app scenario
+
+Ames Housing explorer
+* Side-by-side scatterplots, each with potentially different variables selected for the X and Y axes
+* Ability to select particular data points in the scatterplots via interactive [plot brushing](http://shiny.rstudio.com/articles/selecting-rows-of-data.html)
+* View key variables associated with the selected data points within a [DT](https://rstudio.github.io/DT/) data table below the plots
+* Optionally add annotations of the total sales price to the points in the scatterplot corresponding to the rows currently viewed in the data table
+    </textarea>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script src="macros.js"></script>
+<script>var slideshow = remark.create({
+"ratio": "16:9",
+"highlightStyle": "github",
+"highlightLines": true,
+"countIncrementalSlides": false
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function() {
+  var d = document, s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})();</script>
+
+<script>
+(function() {
+  var i, text, code, codes = document.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+})();
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>

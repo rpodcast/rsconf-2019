@@ -1,0 +1,61 @@
+/* Two-column layout that has the right column as 20% */
+.left-column-big {
+  color: #777;
+  width: 75%;
+  height: 92%;
+  float: left;
+}
+.left-column-big h2:last-of-type, .left-column-big h3:last-child {
+  color: #000;
+}
+.right-column-small {
+  width: 20%;
+  float: right;
+  padding-top: 1em;
+}
+
+/* Two-column layout that has the right column as 80% */
+.left-column-small {
+  color: #777;
+  width: 20%;
+  height: 92%;
+  float: left;
+}
+.left-column-small h2:last-of-type, .left-column-small h3:last-child {
+  color: #000;
+}
+.right-column-big {
+  width: 75%;
+  float: right;
+  padding-top: 1em;
+}
+
+/* Two-column layout that has the right column as 60% */
+.left-column-med {
+  color: #777;
+  width: 40%;
+  height: 92%;
+  float: left;
+}
+.left-column-med h2:last-of-type, .left-column-med h3:last-child {
+  color: #000;
+}
+.right-column-med {
+  width: 55%;
+  float: right;
+}
+
+/* Two-column layout that has the right column as 55% */
+.left-column-med2 {
+  color: #777;
+  width: 43%;
+  height: 92%;
+  float: left;
+}
+.left-column-med h2:last-of-type, .left-column-med h3:last-child {
+  color: #000;
+}
+.right-column-med2 {
+  width: 52%;
+  float: right;
+}
