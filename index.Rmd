@@ -91,15 +91,6 @@ Modules could help with many of these issues
 
 ---
 
-# Basic Example
-
-Use modules from first article (variable chooser and scatterplot)
-* Only one plot for simplicity
-* Variable select: Demonstrates simple UI (two select inputs)
-* Plot module: Demonstrates displaying output based on input parameters
-
----
-
 # Why should we care?
 
 - Avoid namespace collisions (apply widget multiple times with little overhead)
@@ -136,4 +127,16 @@ Ames Housing explorer
 * View key variables associated with the selected data points within a [DT](https://rstudio.github.io/DT/) data table below the plots
 * Optionally add annotations of the total sales price to the points in the scatterplot corresponding to the rows currently viewed in the data table
 
+---
+
+# Basic Example
+
+Use modules from first article (variable chooser and scatterplot)
+* Only one plot for simplicity
+* Variable select: Demonstrates simple UI (two select inputs)
+* Plot module: Demonstrates displaying output based on input parameters
+
+__Key Points__
+* Be explicit about the __contract__ for a module
+* Document the inputs and return values much like an R function
 
