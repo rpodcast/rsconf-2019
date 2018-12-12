@@ -87,7 +87,7 @@ Modules could help with many of these issues
 
 * Set of R functions optimized for Shiny applications, typically composed of user-interface and server-side logic
 * Avoid namespace collisions when using same widget across different parts of your app
-* Allows you to  __compartmentalize__ distinct app components
+* Allows you to encapsulate distinct app components
 
 ---
 
@@ -113,8 +113,8 @@ Modules could help with many of these issues
 # Roadmap for using modules in complex apps
 
 1. Creating and using simple modules occassionally
-2. Communication among modules (receiving input and returning output)
-3. Communication between sibling modules (parent in charge)
+2. Communication with modules (receiving input and returning output)
+3. Communication between sibling modules (parent in charge) (this is more of 2 above)
 4. (May not include0) Modules that use other modules as inputs / parameters
 
 ---

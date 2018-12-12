@@ -1,3 +1,26 @@
+### Notes from review with Joe 12/11/18
+
+* Combine slides 8 & 9 (learning modules and roadmap for using modules in complex apps)
+* Case 1 (frontend ): Pair the content down and think carefully for what my reason is to include the story. My rationale was to show that I've been through the struggles of trying to implement a custom solution for and ran in to many problems that modules does a much better job of solving
+* Shiny ladder: Note that a big part of my job now is creating complex applicaitons, and I can ask the audience interactively how many have worked on large/complex applications
+* Motivation:
+    + We are really saying that you can't build non-trivial software without funcitons in regular R, and in the Shiny space you can't build complex Shiny apps in a robust way without modules
+* Roadmap
+    + Think about moving this towards beginning of presentation
+    + A lot of people are accomplishing (1) successfully
+    + I should emphasize that it would be surprising if those in Shiny app development are accomplishing 2 and 3 successfully
+    + In the Shiny training courses offered previously, the modules portion is where most people end up getting stuck
+    + Acknowledge that even Joe says that they have not done a good enough job of teaching effective use of modules
+    + You have to learn some boilerplate, but once you get started it will make more sense as you go and you will get used to it
+* Overall theme notes
+    + This isn't so much about _best practices_ (a phrase that's been tarnished in CS space). Emphasize that modules are __essential__ to bring about software engineering best practices in Shiny app deveopment
+    + Slide 2: Find a way to connect better the points (1) (about R is appealing for interactive and quick analyses), and point (2) (software engineering and shiny)
+* Definition of Modules
+    + Combine this with the "why should we care" slide
+    + Point out that modules are to a Shiny app as functions are in R code (functions help avoid collisions in variable names)
+    + Just like functions recursively break down of multiple calls, we can do a tree of modules in a recursive-like structure
+    + 
+
 ### Article to-dos and feedback
 
 * As the main content of the articles gets polished, imagine someone was squinting their eyes and only looking at various headings or other easy-to-find pieces of text. Would they be able to understand the key points without having to necessarily read the wall of text?
