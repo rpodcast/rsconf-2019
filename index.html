@@ -7,9 +7,12 @@
     <link href="libs/remark-css/default.css" rel="stylesheet" />
     <link href="libs/remark-css/metropolis.css" rel="stylesheet" />
     <link href="libs/remark-css/metropolis-fonts.css" rel="stylesheet" />
+    <link href="libs/font-awesome/css/fontawesome-all.min.css" rel="stylesheet" />
     <link rel="stylesheet" href="custom_css/footer.css" type="text/css" />
     <link rel="stylesheet" href="custom_css/misc.css" type="text/css" />
     <link rel="stylesheet" href="custom_css/animate.css" type="text/css" />
+    <link rel="stylesheet" href="custom_css/road.css" type="text/css" />
+    <link rel="stylesheet" href="custom_css/two_columns.css" type="text/css" />
   </head>
   <body>
     <textarea id="source">
@@ -31,64 +34,252 @@ layout: true
 
 ---
 
-# Theme brainstorm
+# My Journey with Shiny
 
-* R is so appealing in data science as it gives you a quick way to prototype and perform analyses 
-* Once you begin to develop Shiny, it is advantageous to adopt software engineering best practices
-* Modules are a key feature to help facilitate software engineering when developing shiny apps
-* Trying to create pieces (modules) that are individually understandable and connect them in reliable ways
+.pull-left[
+Early adopter when Shiny was released to CRAN
+
+__First efforts__: Small prototypes to showcase possibilities and [learn by doing](https://r-podcast.org/15)
+
+<i class="fas  fa-rocket "></i> Ascend Joe Cheng's [ladder of enlightment](https://github.com/rstudio/ShinyDeveloperConference/blob/45737f1f3386fb3a9194c40f9a999b58f60971de/Reactivity/slides.Rmd#L233-L240) 
+
+Present day: Developer of __large and complex__ applications integrating multiple systems
+]
+
+.pull-right[
+![:scale 90%](img/Flynnuser.png)
+]
+
+---
+
+# Case Study
+
+Empower statisticians with little/no <i class="fab  fa-r-project " style="color:#384CB7;"></i> experience to perform subgroup identification based on [TSDT](https://cran.rstudio.com/web/packages/TSDT/) package
+
+🚧 Non-trivial requirements (persistent sessions, dynamic UI, HPC integration)
+
+--
+
+__Difficulties__
+
+* Duplicated similar(ish) UI widgets across app
+* Code not organized well
+* Extending capabilities was challenging
+
+--
+
+## What can solve many of these issues?
+
+---
+
+background-image: url(img/key.gif)
+background-size: cover
+
+class: inverse, clear, center, middle
+
+# Modules to the Rescue!
+
+---
+
+# What are Modules?
+
+--
+
+## Functions optimized for Shiny applications
+
+--
+
+- Avoid namespace collisions when using same widget across different parts of your app
+- Allows you to encapsulate distinct app components
+- Organize code into logical and easy-to-understand components
+- Facilitates collaboration
+
+--
+
+## Sound familiar?
+
+--
+
+- <i class="fab  fa-r-project " style="color:#384CB7;"></i> functions help avoid collisions in variable names with general R code
+- Essential for creating non-trivial and extensive workflows
+
+---
+
+background-image: url(img/roadsunset17.png)
+background-size: cover
+
+class: inverse, clear, center, top
+
+.center[
+## Road to Modules Mastery
+]
+
+--
+
+&lt;div class="step1"&gt;(1) Creating/using simple modules occassionally&lt;/div&gt;
+--
+
+&lt;div class="step2"&gt;(2) Communication with modules&lt;/div&gt;
+&lt;div class="step3"&gt;(3) Communication between sibling modules&lt;/div&gt;
+
+---
+
+# Example: Ames Housing Explorer
+
+![](img/ames_explorer_screenshot.png)
+
+[rpodcast.shinyapps.io/ames_explorer](https://rpodcast.shinyapps.io/ames_explorer)
+
+???
+
+__TODO__: Ask about swapping for animated gif (was a resource hog when interactively viewing slides)
+
+* Side-by-side scatterplots with variable choices
+* Select points via Shiny's interactive [plot brushing](http://shiny.rstudio.com/articles/selecting-rows-of-data.html)
+* View additional variables inside a [DT](https://rstudio.github.io/DT/) data table
+* Ability to annotate total sales price for data points in table
+
+---
+
+# Variable Selection
+
+.left-column-big[
+
+```r
+#' Variable selection module server-side processing
+#'
+*#' @param input, output, session standard \code{shiny} boilerplate
+#'
+*#' @return list with following components
+#' \describe{
+#'   \item{xvar}{reactive character string indicating x variable selection}
+#'   \item{yvar}{reactive character string indicating y variable selection}
+#' }
+varselect_mod_server &lt;- function(input, output, session) {
+
+* return(
+*   list(
+*     xvar = reactive({ input$xvar }),
+*     yvar = reactive({ input$yvar })
+*   )
+* )
+}
+```
+]
+
+.right-column-small[
+
+🗒 Document a module's input(s) and return value(s)
+
+Constructing a named list articulates the __intent__ of a module
+]
+
+---
+
+# Scatterplot Module
+
+.left-column-big[
+.code50[
+
+```r
+#' Scatterplot module server-side processing
+#'
+#' This module produces a scatterplot with the sales price against a variable selected by the user.
+#' 
+#' @param input,output,session standard \code{shiny} boilerplate
+#' @param dataset data frame (non-reactive) with variables necessary for scatterplot
+*#' @param plot1_vars list containing reactive x-variable name (called `xvar`) and y-variable name (called `yvar`) for plot 1
+*#' @param plot2_vars list containing reactive x-variable name (called `xvar`) and y-variable name (called `yvar`) for plot 2
+scatterplot_server_mod &lt;- function(input, 
+                            output, 
+                            session, 
+                            dataset, 
+                            plot1vars,
+                            plot2vars) {
+  
+  
+  plot1_obj &lt;- reactive({
+*   p &lt;- scatter_sales(dataset, xvar = plot1vars$xvar(), yvar = plot1vars$yvar())
+    return(p)
+  })
+  
+  plot2_obj &lt;- reactive({
+*   p &lt;- scatter_sales(dataset, xvar = plot2vars$xvar(), yvar = plot2vars$yvar())
+    return(p)
+  })
+  
+  output$plot1 &lt;- renderPlot({
+    plot1_obj()
+  })
+  
+  output$plot2 &lt;- renderPlot({
+    plot2_obj()
+  })
+}
+```
+]
+]
+
+.right-column-small[
+Clearly-defined object types for `plot1vars` and `plot2vars` inputs
+
+How to correctly reference these inputs?
+
+❌ `plot1vars()$yvar`
+
+✅ `plot1vars$yvar()`
+]
+
+---
+
+class: inverse, clear, center, middle
+
+# What does it all mean?
+
+---
+
+# You may already know...
+
+* <i class="fab  fa-r-project " style="color:#384CB7;"></i> is well-suited for interactive workflows in data science
+
+* Functions become an essential building-block when moving from prototypes to non-trivial workflows
+
+--
+
+## Is it any different when creating Shiny apps?  No!
+
+* Shiny modules are __essential__ to bring software engineering best practices to application development
+
+---
+
+# Call to action
+
+* Read the new article on module communication best practices at the Shiny site
+* Watch for more articles this year on additional module topics
+* Review Ames Housing Explorer app that demonstrates many of these concepts
+
 
 ---
 class: fullscreen, inverse, center, text-black
 
-.font250[**My Journey with Modules**]
+.font250[**Backup**]
 
 ---
 
-# Climbing the Shiny Ladder
 
-* Early adopter when Shiny was released to CRAN
-* Began with small prototypes, showcasing the possibilities
-* Next level: Shiny as frontend to sophisticated internal analysis pipelines
 
----
 
-# Case 1: Frontend to subgroup identification
-
-* Internal R package with algorithm to identify subgroups with better response compared to overall
-* Package is now on CRAN (add link to TSDT package) &lt;https://cran.rstudio.com/web/packages/TSDT/&gt;
-* Shiny empowered statisticians with little R experience to apply package on real data sets
-* Many parts to app:
-    + Persistent sessions (precursor to Shiny bookmarkable state)
-    + Data loader and variable assignment
-    + Algorithm parameter settings
-    + Execute algorithm on HPC cluster
-    + Post-process results with dynamic graphics and summary tables
-    
-__Difficulties__
-
-* Duplicated similar(ish) UI widgets across different pieces
-* Code organization (link to scattered noodle pic from one of Ian Lyttle's presentations)
-* Extending capabilities was challenging
-
-Modules could help with many of these issues
 
 ---
 
 # What is a module?
 
-* Set of R functions optimized for Shiny applications, typically composed of user-interface and server-side logic
-* Avoid namespace collisions when using same widget across different parts of your app
-* Allows you to encapsulate distinct app components
 
 ---
 
 # Why should we care?
 
-- Avoid namespace collisions (apply widget multiple times with little overhead)
-- Organize code into logical and easy-to-understand components
-- Facilitates collaboration (different pieces can be developed independently)
-- Enables software engineering best practices (needs rewording)
+
 
 ---
 
@@ -109,15 +300,7 @@ Modules could help with many of these issues
 3. Communication between sibling modules (parent in charge) (this is more of 2 above)
 4. (May not include0) Modules that use other modules as inputs / parameters
 
----
 
-# Introduce example app scenario
-
-Ames Housing explorer
-* Side-by-side scatterplots, each with potentially different variables selected for the X and Y axes
-* Ability to select particular data points in the scatterplots via interactive [plot brushing](http://shiny.rstudio.com/articles/selecting-rows-of-data.html)
-* View key variables associated with the selected data points within a [DT](https://rstudio.github.io/DT/) data table below the plots
-* Optionally add annotations of the total sales price to the points in the scatterplot corresponding to the rows currently viewed in the data table
 
 ---
 
