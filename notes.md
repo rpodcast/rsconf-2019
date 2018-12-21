@@ -1,3 +1,87 @@
+### Notes from review with Joe 12/17/18
+
+### Visualization
+
+see hand-drawn paper and try to use software to make it
+
+* Replicating tsdt app structure. Here are groups of modules and their relationships
+
+Welcome modules:
+- session viewer module
+- session manage module
+- session activation module
+
+Import data modules:
+- variable assignment module
+- import data module
+- data viewer module
+
+Algorithm settings module:
+- settings ui module
+
+HPC module:
+- HPC project settings define module
+- HPC project settings viewer module
+- HPC project settings execute module
+
+Post-process module:
+- import previous results
+- visualization
+- data table results viewer
+- variable filters
+
+### App example screenshot
+
+* Draw arrows demonstrating the communication between the app components
+    + region 1: Var selection 1 to scatterplot 1
+    + region 2: Var selection 2 to scatterplot 2
+    + both plots to DT module
+* Emphasis on avoiding copying/pasting the code behind these modules
+
+### Transition from road slide to example
+
+Add a new slide(s) in between road slide to example about the principles we are teaching.  __BE AUTHORITATIVE__
+
+Put emphasis on the principles I will illustrate in the example
+
+Step 1: Careful Design
+* What does this module do?  What is it trying to accomplish?  What ides does it emcompass? Tip: If you have trouble figuring out a function name, then you have to do some more work
+
+Step 2: What are the inputs and outputs we need?
+* Documentation plays key role here
+
+Yes we have the boilerplate function `callModule` but that is just implementation
+
+### Module details to highlight
+
+* How do you determine whether you need a __static__ or a __reactive__ input?  This trips up many people
+* In Shiny context: Are you passing the __present__ value or the __future__ value?
+* In R functions we do this all of the time when we think carefully about the inputs and outputs, but in Shiny modules we have a third dimension to the problem __time__ (i.e. is it just the present value? or the present & future value?)
+* Show why we need to use something() instead of "something" 
+
+In plot module example code:
+
+* dataset parameter: why is it a reactive expression and not a static value? Tell audience why
+
+### New slide: Battle scars
+
+* Kitchen sink approach complications
+* Lack of clear documentation (building in after the fact)
+* Put this after the examples and before the wrapup
+
+### Titles for example slides
+
+* Change titles to show what the slide conveys.
+* Advice: Each slide title is like a thesis statement
+* Example: __Document your Modules!__
+
+### Module intro slide
+
+* Change from "Functions optimized for shiny modules" to something like "Way of __breaking__ up complex apps into smaller, more understanable pieces"
+
+
+
+
 ### Notes from review with Joe 12/11/18
 
 * Combine slides 8 & 9 (learning modules and roadmap for using modules in complex apps)
