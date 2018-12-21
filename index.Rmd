@@ -2,11 +2,11 @@
 title: "Effective use of Shiny modules"
 subtitle: "rstudio::conf 2019 (very rough draft)"
 author: "Eric Nantz"
-date: "2019/1/17"
+date: "2019/1/18"
 output:
   xaringan::moon_reader:
     lib_dir: libs
-    css: [default, metropolis, metropolis-fonts, "custom_css/footer.css", "custom_css/misc.css", "custom_css/animate.css", "custom_css/road.css", "custom_css/two_columns.css"]
+    css: [default, metropolis, metropolis-fonts, "custom_css/footer.css", "custom_css/misc.css", "custom_css/animate.css", "custom_css/road.css", "custom_css/two_columns.css", "custom_css/fontsize.css"]
     nature:
       ratio: 16:9
       beforeInit: "macros.js"
@@ -76,6 +76,35 @@ __Difficulties__
 ## What can solve many of these issues?
 
 ---
+name: non-modules
+background-image: url(img/non_modules_slides.svg)
+background-position: center
+background-size: contain
+
+class: top, clear, center
+
+---
+
+background-image: url(img/spaghetti.jpg)
+background-position: center
+background-size: contain
+
+class: inverse, clear, center, bottom
+
+.center[
+## [Reactive Spaghetti (Ian Lyttle & Alex Shum)](https://www.rstudio.com/resources/videos/shiny-modules/)
+]
+
+---
+template: non-modules
+
+.center[
+.large[
+What can solve many of these issues?
+]
+]
+
+---
 
 background-image: url(img/key.gif)
 background-size: cover
@@ -90,7 +119,7 @@ class: inverse, clear, center, middle
 
 --
 
-## Functions optimized for Shiny applications
+## Compose complex apps into smaller, more understandable pieces
 
 --
 
@@ -105,8 +134,16 @@ class: inverse, clear, center, middle
 
 --
 
-- `r r_logo()` functions help avoid collisions in variable names with general R code
+- `r r_logo()` functions also help avoid collisions in variable names with general R code
 - Essential for creating non-trivial and extensive workflows
+
+---
+
+background-image: url(img/modules_slide.svg)
+background-position: center
+background-size: contain
+
+class: inverse, clear, center, middle
 
 ---
 
@@ -129,9 +166,51 @@ class: inverse, clear, center, top
 
 ---
 
-# Example: Ames Housing Explorer
+# All roads lead to these principles:
 
-![](img/ames_explorer_screenshot.png)
+--
+.pull-left[
+.center[
+## Careful design
+
+What does the module do?
+
+What is it trying to accomplish?
+
+`r emo::ji("thinking")` What should I call this module?
+
+]
+]
+
+--
+.pull-right[
+.center[
+## Inputs & return values
+
+Static or reactive input(s)?
+
+Complexity of return values 
+
+Which outputs serve as inputs for other modules?
+]
+]
+
+--
+
+.center[
+## Effective Shiny app design
+
+__Using modules without these principles in mind is not enough!__
+]
+
+---
+background-image: url(img/ames_explorer_arrows_screenshot.svg)
+background-position: center
+background-size: contain
+
+class: clear, center, bottom
+
+# Example: Ames Housing Explorer
 
 [rpodcast.shinyapps.io/ames_explorer](https://rpodcast.shinyapps.io/ames_explorer)
 
@@ -146,7 +225,7 @@ __TODO__: Ask about swapping for animated gif (was a resource hog when interacti
 
 ---
 
-# Variable Selection
+# Document your modules!
 
 .left-column-big[
 ```{r, tidy=FALSE, eval=FALSE}
@@ -175,12 +254,14 @@ varselect_mod_server <- function(input, output, session) {
 
 `r emo::ji("spiral_notepad")` Document a module's input(s) and return value(s)
 
-Constructing a named list articulates the __intent__ of a module
+`r emo::ji("memo")` Constructing a named list articulates the __intent__ of a module
+
+![:scale 50%](img/contract.svg)
 ]
 
 ---
 
-# Scatterplot Module
+# Static or reactive inputs?
 
 .left-column-big[
 .code50[
@@ -190,15 +271,15 @@ Constructing a named list articulates the __intent__ of a module
 #' This module produces a scatterplot with the sales price against a variable selected by the user.
 #' 
 #' @param input,output,session standard \code{shiny} boilerplate
-#' @param dataset data frame (non-reactive) with variables necessary for scatterplot
-#' @param plot1_vars list containing reactive x-variable name (called `xvar`) and y-variable name (called `yvar`) for plot 1 #<<
-#' @param plot2_vars list containing reactive x-variable name (called `xvar`) and y-variable name (called `yvar`) for plot 2 #<<
+#' @param dataset data frame (non-reactive) with variables necessary for scatterplot #<<
+#' @param plot1_vars list containing reactive x-variable name (called `xvar`) and y-variable name (called `yvar`) for plot 1 
+#' @param plot2_vars list containing reactive x-variable name (called `xvar`) and y-variable name (called `yvar`) for plot 2 
 scatterplot_server_mod <- function(input, 
-                            output, 
-                            session, 
-                            dataset, 
-                            plot1vars,
-                            plot2vars) {
+                                   output, 
+                                   session, 
+                                   dataset, 
+                                   plot1vars,
+                                   plot2vars) {
   
   
   plot1_obj <- reactive({
@@ -224,7 +305,62 @@ scatterplot_server_mod <- function(input,
 ]
 
 .right-column-small[
-Clearly-defined object types for `plot1vars` and `plot2vars` inputs
+Why `dataset` and not `dataset()`?
+
+* `dataset` does not change within the application
+* Only need the __present__ value
+
+]
+
+---
+
+# Present or future value?
+
+.left-column-big[
+.code50[
+```{r, tidy=FALSE, eval=FALSE}
+#' Scatterplot module server-side processing
+#'
+#' This module produces a scatterplot with the sales price against a variable selected by the user.
+#' 
+#' @param input,output,session standard \code{shiny} boilerplate
+#' @param dataset data frame (non-reactive) with variables necessary for scatterplot
+#' @param plot1_vars list containing reactive x-variable name (called `xvar`) and y-variable name (called `yvar`) for plot 1 #<<
+#' @param plot2_vars list containing reactive x-variable name (called `xvar`) and y-variable name (called `yvar`) for plot 2 #<<
+scatterplot_server_mod <- function(input, 
+                                   output, 
+                                   session, 
+                                   dataset, 
+                                   plot1vars,
+                                   plot2vars) {
+  
+  
+  plot1_obj <- reactive({
+    p <- scatter_sales(dataset, xvar = plot1vars$xvar(), yvar = plot1vars$yvar()) #<<
+    return(p)
+  })
+  
+  plot2_obj <- reactive({
+    p <- scatter_sales(dataset, xvar = plot2vars$xvar(), yvar = plot2vars$yvar()) #<<
+    return(p)
+  })
+  
+  output$plot1 <- renderPlot({
+    plot1_obj()
+  })
+  
+  output$plot2 <- renderPlot({
+    plot2_obj()
+  })
+}
+```
+]
+]
+
+.right-column-small[
+`xvar` and `yvar`: __Reactive__ based on variable chooser
+
+Not just the __present__ value, but the __future__ value too
 
 How to correctly reference these inputs?
 
@@ -235,86 +371,110 @@ How to correctly reference these inputs?
 
 ---
 
-class: inverse, clear, center, middle
+# Traps to avoid
 
-# What does it all mean?
+.pull-left[
+.center[
+![:scale 35%](img/sink.jpg)
+]
+
+.code70[
+```{r, eval=FALSE}
+# in main app, set up placeholder
+r_data <- reactiveValues()
+
+# pass r_data around as input parameter in all modules
+module1_mod <- function(input, output, session, r_data) {
+  
+  obj1 <- reactive({
+    # various processing ...
+    foo <- complicated_function()
+    r_data[['obj1']] <- foo
+  })
+  
+  # Return something? Nah, I took care of that already!
+}
+
+# imagine many other modules as above ...
+callModule(module1_mod, "id1", r_data)
+callModule(module2_mod, "id2", r_data)
+```
+]
+]
+
+--
+
+.pull-right[
+## What could possibly go wrong?
+
+* __Hidden State__: Difficult to pinpoint which module(s) impact `r_data` objects
+* Only certain objects from `r_data` are needed in a given module
+* Lose sight of the __contracts__ between modules
+
+__Perspective__: Passing environments back and forth between typical `r r_logo()` functions would be a bad idea too!
+]
+
+
+---
+background-image: url(https://media.giphy.com/media/l41YBHH1A6OPQ5iXS/giphy.gif)
+background-size: cover
+class: inverse, clear, center, middle
 
 ---
 
 # You may already know...
 
 * `r r_logo()` is well-suited for interactive workflows in data science
-
 * Functions become an essential building-block when moving from prototypes to non-trivial workflows
+* Define clear function inputs and return values for effective structure
 
 --
 
 ## Is it any different when creating Shiny apps?  No!
 
-* Shiny modules are __essential__ to bring software engineering best practices to application development
+Using modules combined with the principles discussed today is __essential__ to bring software engineering best practices to application development
+
+* Determine purpose of the module
+* Documentation for inputs and outputs 
+* Define the relationships between modules
 
 ---
 
-# Call to action
+# Calls to action
 
-* Read the new article on module communication best practices at the Shiny site
-* Watch for more articles this year on additional module topics
-* Review Ames Housing Explorer app that demonstrates many of these concepts
+Read the new article on [module communication best practices](http://shiny.rstudio.com/articles/communicate-bet-modules.html) at the Shiny site
 
+`r emo::ji("eyes")` for more articles this year on additional module topics
 
----
-class: fullscreen, inverse, center, text-black
-
-.font250[**Backup**]
+Review [Ames Housing Explorer app](https://rpodcast.shinyapps.io/ames_explorer) that demonstrates the principles discussed today and more.  Code available __TODO: Insert Link__
 
 ---
 
+# Thank you!
 
+.center[
+<table style="border-style:none;padding-top:30px;" class=".table">
+  <br />
+  <br />
+  <tr>
+    <th style="padding-right:25px!important" align="center"><a href="https://twitter.com/thercast"> <i class="fab fa-twitter fa-3x"></i> </a></th>
+    <th style="padding-left:25px!important" align="center"><a href="https://github.com/rpodcast"> <i class="fab fa-github fa-3x"></i> </a></th>
+    <th style="padding-left:25px!important" align="center"><a href="https://gitlab.com/rpodcast"> <i class="fab fa-gitlab fa-3x"></i> </a></th>
+    <th style="padding-left:25px!important" align="center"><a href="https://r-podcast.org"> <i class="fa fa-microphone fa-3x"></i> </a></th>
+  </tr>
+  <tr style="background-color:#fafafa">
+    <th style="padding-right:25px!important"><a href="https://twitter.com/thercast"> @thercast </a></th>
+    <th style="padding-left:25px!important"><a href="https://github.com/rpodcast"> @rpodcast </a></th>
+    <th style="padding-left:25px!important"><a href="https://gitlab.com/rpodcast"> @rpodcast </a></th>
+    <th style="padding-left:25px!important"><a href="https://r-podcast.org"> r-podcast.org </a></th>
+  </tr></table>
+]
 
+.font110[
+Other efforts in the `r r_logo()` community:
+* Contributor to [R Weekly](https://rweekly.org/)
+* [RStudio Community](https://community.rstudio.com/) sustainer
+* Member of [Rbind](https://support.rbind.io/) administrator team
 
-
----
-
-# What is a module?
-
-
----
-
-# Why should we care?
-
-
-
----
-
-# Learning Modules
-
-- I started using modules in basic ways (apps with maybe 1-2 modules reused in different parts)
-- More for display and having convenient UI widgets
-- Over time: Complex applications with many modules (20 plus)
-    + Forced to think carefully about orchestration & how to reliably link (compose) modules together
-    + (pic of music conductor? maybe too corny)
-
----
-
-# Roadmap for using modules in complex apps
-
-1. Creating and using simple modules occassionally
-2. Communication with modules (receiving input and returning output)
-3. Communication between sibling modules (parent in charge) (this is more of 2 above)
-4. (May not include0) Modules that use other modules as inputs / parameters
-
-
-
----
-
-# Basic Example
-
-Use modules from first article (variable chooser and scatterplot)
-* Only one plot for simplicity
-* Variable select: Demonstrates simple UI (two select inputs)
-* Plot module: Demonstrates displaying output based on input parameters
-
-__Key Points__
-* Be explicit about the __contract__ for a module
-* Document the inputs and return values much like an R function
-
+Slides created with the [xaringan](https://slides.yihui.name/xaringan) package available at [bit.ly/modules2019](https://bit.ly/modules2019)
+]
