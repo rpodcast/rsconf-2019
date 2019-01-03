@@ -4,3 +4,23 @@
 .large { font-size: 130% }
 .small { font-size: 70% }
 .tiny { font-size: 40% }
+
+.code150 .remark-code {
+  font-size: 150%;
+}
+
+.code140 .remark-code {
+  font-size: 140%;
+}
+
+.code130 .remark-code {
+  font-size: 130%;
+}
+
+.code120 .remark-code {
+  font-size: 120%;
+}
+
+.code110 .remark-code {
+  font-size: 110%;
+}

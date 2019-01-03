@@ -1,17 +1,17 @@
 ---
 title: "Effective use of Shiny modules"
-subtitle: "rstudio::conf 2019 (very rough draft)"
-author: "Eric Nantz"
-date: "2019/1/18"
+subtitle: "`rstudio::conf(2019L)`"
+author: "<br>Eric Nantz <br> Eli Lilly and Company <br> 2019/1/18 <br> Slides: <a href='https://bit.ly/modules2019'>bit.ly/modules2019</a> <br><br><br> <a href='https://twitter.com/thercast'> <i class='fab  fa-twitter '></i>@thercast</a> <br> <a href='https://github.com/rpodcast'> <i class='fab  fa-github ' ></i>rpodcast</a> <br> <a href='https://gitlab.com/rpodcast'> <i class='fab  fa-gitlab ' ></i>rpodcast</a> <br><i class='fas  fa-microphone '></i>  <a href='https://r-podcast.org'>r-podcast.org</a><br>"
 output:
   xaringan::moon_reader:
     lib_dir: libs
-    css: [default, metropolis, metropolis-fonts, "custom_css/footer.css", "custom_css/misc.css", "custom_css/animate.css", "custom_css/road.css", "custom_css/two_columns.css", "custom_css/fontsize.css"]
+    css: [default, metropolis, metropolis-fonts, "custom_css/footer.css", "custom_css/misc.css", "custom_css/animate.css", "custom_css/road.css", "custom_css/two_columns.css", "custom_css/fontsize.css", "custom_css/title.css"]
     nature:
       ratio: 16:9
       beforeInit: "macros.js"
       highlightStyle: github
       highlightLines: true
+      highlightSpans: true
       countIncrementalSlides: false
 ---
 
@@ -119,7 +119,7 @@ class: inverse, clear, center, middle
 
 --
 
-## Compose complex apps into smaller, more understandable pieces
+## Compose complex apps out of smaller, more understandable pieces
 
 --
 
@@ -143,7 +143,7 @@ background-image: url(img/modules_slide.svg)
 background-position: center
 background-size: contain
 
-class: inverse, clear, center, middle
+class: clear, center, middle
 
 ---
 
@@ -210,9 +210,9 @@ background-size: contain
 
 class: clear, center, bottom
 
-# Example: Ames Housing Explorer
-
 [rpodcast.shinyapps.io/ames_explorer](https://rpodcast.shinyapps.io/ames_explorer)
+
+[github.com/rpodcast/ames_explorer](https://github.com/rpodcast/ames_explorer)
 
 ???
 
@@ -272,23 +272,23 @@ varselect_mod_server <- function(input, output, session) {
 #' 
 #' @param input,output,session standard \code{shiny} boilerplate
 #' @param dataset data frame (non-reactive) with variables necessary for scatterplot #<<
-#' @param plot1_vars list containing reactive x-variable name (called `xvar`) and y-variable name (called `yvar`) for plot 1 
-#' @param plot2_vars list containing reactive x-variable name (called `xvar`) and y-variable name (called `yvar`) for plot 2 
+#' @param plot1_vars list containing reactive x-variable name (called xvar) and y-variable name (called yvar) for plot 1 
+#' @param plot2_vars list containing reactive x-variable name (called xvar) and y-variable name (called yvar) for plot 2 
 scatterplot_server_mod <- function(input, 
                                    output, 
                                    session, 
-                                   dataset, 
+                                   `dataset`, 
                                    plot1vars,
                                    plot2vars) {
   
   
   plot1_obj <- reactive({
-    p <- scatter_sales(dataset, xvar = plot1vars$xvar(), yvar = plot1vars$yvar()) #<<
+    p <- scatter_sales(`dataset`, xvar = plot1vars$xvar(), yvar = plot1vars$yvar())
     return(p)
   })
   
   plot2_obj <- reactive({
-    p <- scatter_sales(dataset, xvar = plot2vars$xvar(), yvar = plot2vars$yvar()) #<<
+    p <- scatter_sales(`dataset`, xvar = plot2vars$xvar(), yvar = plot2vars$yvar())
     return(p)
   })
   
@@ -312,6 +312,65 @@ Why `dataset` and not `dataset()`?
 
 ]
 
+---
+
+# To () or not to ()
+
+.pull-left[
+![:scale 100%](img/map.png)
+.center[
+[Advanced R (Second Edition)](https://adv-r.hadley.nz/functionals.html)
+]
+]
+
+--
+
+.pull-right[
+`purrr::map()` takes __name__ of function as parameter, but __invokes__ function on each piece of supplied vector
+
+## How does this apply to modules?
+
+]
+---
+
+# To () or not to ()
+
+.pull-left[
+.code120[
+```
+callModule(mod, "name", `plot1var`)
+```
+]
+
+.center[
+![:scale 10%](img/arrow_down.png)
+]
+
+.code80[
+```
+mod <- function(input, output, session, plot1var) {
+  foo <- reactive({
+    # reference plot1var
+    `plot1var()`
+  })
+  
+  # return key reactive
+  return(`foo`)
+}
+```
+]
+]
+
+--
+
+.pull-right[
+
+Reactive parameters referenced by __name__: `plot1var`
+
+Inside module, __invoke__ reactive parameter as you would any other reactive in Shiny: `plot1var()`
+
+Any reactive(s) returned by module should also be referenced by __name__: `foo`, not `foo()` 
+]
 ---
 
 # Present or future value?
@@ -440,13 +499,45 @@ Using modules combined with the principles discussed today is __essential__ to b
 
 ---
 
+# What's in it for me?
+
+--
+
+## Avoid namespace collisions when re-using widgets across application
+
+--
+
+## Organize application with distinct components
+
+* Facilitates concurrent development within team
+* Easier to track down bugs in code
+
+--
+
+## Best practices for R development translate well with modules
+
+---
+
 # Calls to action
 
-Read the new article on [module communication best practices](http://shiny.rstudio.com/articles/communicate-bet-modules.html) at the Shiny site
+Read the new article on [module communication best practices](http://shiny.rstudio.com/articles/communicate-bet-modules.html) at [shiny.rstudio.com](https://shiny.rstudio.com)
+* `r emo::ji("eyes")` for more articles this year on additional module topics
 
-`r emo::ji("eyes")` for more articles this year on additional module topics
+Review [Ames Housing Explorer app](https://rpodcast.shinyapps.io/ames_explorer) that demonstrates the principles discussed today and more.  
+* Code available on `r icon::fa("github", size = 1)`: [github.com/rpodcast/ames_explorer](https://github.com/rpodcast/ames_explorer)
 
-Review [Ames Housing Explorer app](https://rpodcast.shinyapps.io/ames_explorer) that demonstrates the principles discussed today and more.  Code available __TODO: Insert Link__
+
+--
+
+.pull-left[
+![:scale 90%](https://media.giphy.com/media/l0K4hqqqwgFijgVLa/giphy.gif) 
+]
+
+.pull-right[
+## You may not get it right the first time ...
+
+## Keep on the Modules highway and it will pay off!
+]
 
 ---
 

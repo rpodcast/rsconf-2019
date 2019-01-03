@@ -1,7 +1,10 @@
 .title-slide {
-  background-image: url(../img/title_slide_pic.png);
-  background-size: 20%; /* was cover */
-  background-position: 95% 70%;
+  border-top: 0px solid #FAFAFA;
+  background-image: url(../img/blueprint_revised.png);
+  background-size: cover; /* was cover */
 }
+/* background-size: 50%; */
+/* background-position: 85% 70%;
+
 /* images to consider */
 /* crane truck: <a href="/detail/284796/crane"><img src="https://openclipart.org/download/284796/crane.svg" /></a>
