@@ -51,6 +51,11 @@ Present day: Developer of __large and complex__ applications integrating multipl
 ![:scale 90%](img/Flynnuser.png)
 ]
 
+???
+
+* In early days, learning Shiny was a struggle when moving from prototypes to large applications
+* ShinyDevCon in 2016
+
 ---
 
 # Case Study
@@ -59,6 +64,10 @@ Empower statisticians with little/no <i class="fab  fa-r-project " style="color:
 
 🚧 Non-trivial requirements (persistent sessions, dynamic UI, HPC integration)
 
+???
+
+* common theme: Use Shiny to give web UI front-end to sophisicated algorithms so those with no expertise in R can perform the analyses
+
 --
 
 __Difficulties__
@@ -66,8 +75,6 @@ __Difficulties__
 * Duplicated similar(ish) UI widgets across app
 * Code not organized well
 * Extending capabilities was challenging
-
---
 
 ## What can solve many of these issues?
 
@@ -78,6 +85,11 @@ background-position: center
 background-size: contain
 
 class: top, clear, center
+
+???
+
+* Notice how I've duplicated various sub-components (variable select, project settings, visualization, summary table)
+* Difficult to reason through the flow from one component to another
 
 ---
 
@@ -117,6 +129,11 @@ class: inverse, clear, center, middle
 
 ## Compose complex apps out of smaller, more understandable pieces
 
+???
+
+* Take a step back: If you have experience with creating R functions and even packages, these are not new concepts to you
+* We will visit this theme throughout the presentation
+
 --
 
 - Avoid namespace collisions when using same widget across different parts of your app
@@ -141,6 +158,13 @@ background-size: contain
 
 class: clear, center, middle
 
+???
+
+* Distinct components mimic the application user's workflow
+* No more (copying-pasting) sub-components like visualization, summary table as they are part of their own namespace in the "big" modules
+* More logical flow between modules
+* I did not arrive at this mindset right away.  It took me a lot of practice and trial-error
+
 ---
 
 background-image: url(img/roadsunset17.png)
@@ -152,13 +176,24 @@ class: inverse, clear, center, top
 ## Road to Modules Mastery
 ]
 
+???
+
+* Most of you in the room are likely at this first stop
+
 --
 
 &lt;div class="step1"&gt;(1) Creating/using simple modules occassionally&lt;/div&gt;
+
+
+
 --
 
 &lt;div class="step2"&gt;(2) Communication with modules&lt;/div&gt;
 &lt;div class="step3"&gt;(3) Communication between sibling modules&lt;/div&gt;
+
+???
+
+* We will illustrate a few concepts to get you on your way to (2) and (3)
 
 ---
 
@@ -178,6 +213,10 @@ What is it trying to accomplish?
 ]
 ]
 
+???
+
+* If you can't name your module easily, that's a warning sign that it is trying to do too much
+
 --
 .pull-right[
 .center[
@@ -191,13 +230,19 @@ Which outputs serve as inputs for other modules?
 ]
 ]
 
+???
+
+* All of these help future you and collaborators understand the flow of your application
+
 --
 
 .center[
-## Effective Shiny app design
-
-__Using modules without these principles in mind is not enough!__
+## Modules built without these principles is not enough!
 ]
+
+???
+
+* Bold statement, but I can tell you from experience this is true
 
 ---
 background-image: url(img/ames_explorer_arrows_screenshot.svg)
@@ -212,7 +257,7 @@ class: clear, center, bottom
 
 ???
 
-__TODO__: Ask about swapping for animated gif (was a resource hog when interactively viewing slides)
+Pull up interactive version if time permits
 
 * Side-by-side scatterplots with variable choices
 * Select points via Shiny's interactive [plot brushing](http://shiny.rstudio.com/articles/selecting-rows-of-data.html)
@@ -228,7 +273,7 @@ __TODO__: Ask about swapping for animated gif (was a resource hog when interacti
 ```r
 #' Variable selection module server-side processing
 #'
-*#' @param input, output, session standard \code{shiny} boilerplate
+*#' @param input, output, session: standard shiny boilerplate
 #'
 *#' @return list with following components
 #' \describe{
@@ -256,6 +301,11 @@ varselect_mod_server &lt;- function(input, output, session) {
 ![:scale 50%](img/contract.svg)
 ]
 
+???
+
+* Example of an __accessor__ module.  Simple yet can be very effective
+* Explicit return with named list
+
 ---
 
 # To () or not to ()
@@ -266,6 +316,10 @@ varselect_mod_server &lt;- function(input, output, session) {
 [Advanced R (Second Edition)](https://adv-r.hadley.nz/functionals.html)
 ]
 ]
+
+???
+
+* `map` function from `purrr` similar to `lapply` family of functions
 
 --
 
@@ -282,6 +336,7 @@ varselect_mod_server &lt;- function(input, output, session) {
 .pull-left[
 .code120[
 ```
+plot1var &lt;- reactive({ input$xvar })
 callModule(mod, "name", `plot1var`)
 ```
 ]
@@ -290,7 +345,7 @@ callModule(mod, "name", `plot1var`)
 ![:scale 10%](img/arrow_down.png)
 ]
 
-.code80[
+.code90[
 ```
 mod &lt;- function(input, output, session, plot1var) {
   foo &lt;- reactive({
@@ -304,6 +359,10 @@ mod &lt;- function(input, output, session, plot1var) {
 ```
 ]
 ]
+
+???
+
+* `callModule` executes the `mod` module
 
 --
 
@@ -321,7 +380,7 @@ Any reactive(s) returned by module should also be referenced by __name__: `foo`,
 # Static or reactive inputs?
 
 .left-column-big[
-.code50[
+.code60[
 
 ```r
 #' Scatterplot module server-side processing
@@ -330,8 +389,8 @@ Any reactive(s) returned by module should also be referenced by __name__: `foo`,
 #' 
 #' @param input,output,session standard \code{shiny} boilerplate
 *#' @param dataset data frame (non-reactive) with variables necessary for scatterplot
-#' @param plot1_vars list containing reactive x-variable name (called xvar) and y-variable name (called yvar) for plot 1 
-#' @param plot2_vars list containing reactive x-variable name (called xvar) and y-variable name (called yvar) for plot 2 
+#' @param plot1_vars list with reactive x-variable name (called xvar) and y-variable name (called yvar) for plot 1 
+#' @param plot2_vars list with reactive x-variable name (called xvar) and y-variable name (called yvar) for plot 2 
 scatterplot_server_mod &lt;- function(input, 
                                    output, 
                                    session, 
@@ -350,13 +409,7 @@ scatterplot_server_mod &lt;- function(input,
     return(p)
   })
   
-  output$plot1 &lt;- renderPlot({
-    plot1_obj()
-  })
-  
-  output$plot2 &lt;- renderPlot({
-    plot2_obj()
-  })
+  # additional code omitted
 }
 ```
 ]
@@ -375,7 +428,7 @@ Why `dataset` and not `dataset()`?
 # Present or future value?
 
 .left-column-big[
-.code50[
+.code60[
 
 ```r
 #' Scatterplot module server-side processing
@@ -384,8 +437,8 @@ Why `dataset` and not `dataset()`?
 #' 
 #' @param input,output,session standard \code{shiny} boilerplate
 #' @param dataset data frame (non-reactive) with variables necessary for scatterplot
-*#' @param plot1_vars list containing reactive x-variable name (called xvar) and y-variable name (called yvar) for plot 1
-*#' @param plot2_vars list containing reactive x-variable name (called xvar) and y-variable name (called yvar) for plot 2
+*#' @param plot1_vars list with reactive x-variable name (called xvar) and y-variable name (called yvar) for plot 1
+*#' @param plot2_vars list with reactive x-variable name (called xvar) and y-variable name (called yvar) for plot 2
 scatterplot_server_mod &lt;- function(input, 
                                    output, 
                                    session, 
@@ -404,13 +457,7 @@ scatterplot_server_mod &lt;- function(input,
     return(p)
   })
   
-  output$plot1 &lt;- renderPlot({
-    plot1_obj()
-  })
-  
-  output$plot2 &lt;- renderPlot({
-    plot2_obj()
-  })
+  # additional code omitted
 }
 ```
 ]
@@ -461,6 +508,11 @@ callModule(module2_mod, "id2", r_data)
 ```
 ]
 ]
+
+???
+
+* I used this approach in my first attempt at creating modules in a complex app
+* As app got bigger, more clutter in the sink
 
 --
 
