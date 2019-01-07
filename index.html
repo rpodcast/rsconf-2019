@@ -309,6 +309,34 @@ varselect_mod_server &lt;- function(input, output, session) {
 ---
 
 # To () or not to ()
+.code150[
+```
+plot1var &lt;- reactive({ input$xvar })
+callModule(mod, "name", `plot1var`)
+```
+]
+
+.center[
+![:scale 10%](img/arrow_down.png)
+]
+
+.code120[
+```
+mod &lt;- function(input, output, session, plot1var) {
+  foo &lt;- reactive({
+    # reference plot1var
+    `plot1var()`
+  })
+  
+  # return key reactive
+  return(`foo`)
+}
+```
+]
+
+---
+
+# To () or not to ()
 
 .pull-left[
 ![:scale 100%](img/map.png)
@@ -329,6 +357,7 @@ varselect_mod_server &lt;- function(input, output, session) {
 ## How does this apply to modules?
 
 ]
+
 ---
 
 # To () or not to ()
@@ -360,12 +389,6 @@ mod &lt;- function(input, output, session, plot1var) {
 ]
 ]
 
-???
-
-* `callModule` executes the `mod` module
-
---
-
 .pull-right[
 
 Reactive parameters referenced by __name__: `plot1var`
@@ -375,28 +398,24 @@ Inside module, __invoke__ reactive parameter as you would any other reactive in 
 Any reactive(s) returned by module should also be referenced by __name__: `foo`, not `foo()` 
 ]
 
+
+???
+
+* `callModule` executes the `mod` module
+
 ---
 
 # Static or reactive inputs?
 
 .left-column-big[
-.code60[
+.code75[
 
 ```r
-#' Scatterplot module server-side processing
-#'
-#' This module produces a scatterplot with the sales price against a variable selected by the user.
-#' 
-#' @param input,output,session standard \code{shiny} boilerplate
-*#' @param dataset data frame (non-reactive) with variables necessary for scatterplot
-#' @param plot1_vars list with reactive x-variable name (called xvar) and y-variable name (called yvar) for plot 1 
-#' @param plot2_vars list with reactive x-variable name (called xvar) and y-variable name (called yvar) for plot 2 
-scatterplot_server_mod &lt;- function(input, 
-                                   output, 
-                                   session, 
-                                   `dataset`, 
-                                   plot1vars,
-                                   plot2vars) {
+#' ...
+#' @param dataset data frame (`non-reactive`) with variables
+#'   necessary for scatterplot
+#' ...
+scatterplot_server_mod &lt;- function(input, output, session, `dataset`, plot1vars,plot2vars) {
   
   
   plot1_obj &lt;- reactive({
@@ -428,23 +447,15 @@ Why `dataset` and not `dataset()`?
 # Present or future value?
 
 .left-column-big[
-.code60[
+.code75[
 
 ```r
-#' Scatterplot module server-side processing
-#'
-#' This module produces a scatterplot with the sales price against a variable selected by the user.
-#' 
-#' @param input,output,session standard \code{shiny} boilerplate
-#' @param dataset data frame (non-reactive) with variables necessary for scatterplot
-*#' @param plot1_vars list with reactive x-variable name (called xvar) and y-variable name (called yvar) for plot 1
-*#' @param plot2_vars list with reactive x-variable name (called xvar) and y-variable name (called yvar) for plot 2
-scatterplot_server_mod &lt;- function(input, 
-                                   output, 
-                                   session, 
-                                   dataset, 
-                                   `plot1vars`,
-                                   `plot2vars`) {
+#' ...
+#' @param plot1_vars list with `reactive` x-variable name (called xvar) 
+#'   and y-variable name (called yvar) for plot 1
+#' @param plot2_vars list with `reactive` x-variable name (called xvar) 
+#'   and y-variable name (called yvar) for plot 2
+scatterplot_server_mod &lt;- function(input, output, session, dataset, `plot1vars`,`plot2vars`) {
   
   
   plot1_obj &lt;- reactive({
@@ -476,15 +487,13 @@ How to correctly reference these inputs?
 ]
 
 ---
+background-image: url(img/sink_background.png)
+background-size: cover
 
 # Traps to avoid
 
 .pull-left[
-.center[
-![:scale 35%](img/sink.jpg)
-]
-
-.code70[
+.code75[
 
 ```r
 # in main app, set up placeholder
