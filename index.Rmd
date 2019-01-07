@@ -62,25 +62,27 @@ Present day: Developer of __large and complex__ applications integrating multipl
 
 ---
 
-# Case Study
+# My First Attempt
 
+.pull-left[
 Empower statisticians with little/no `r r_logo()` experience to perform subgroup identification based on [TSDT](https://cran.rstudio.com/web/packages/TSDT/) package
 
 `r emo::ji("construction")` Non-trivial requirements (persistent sessions, dynamic UI, HPC integration)
-
-???
-
-* common theme: Use Shiny to give web UI front-end to sophisicated algorithms so those with no expertise in R can perform the analyses
-
---
 
 __Difficulties__
 
 * Duplicated similar(ish) UI widgets across app
 * Code not organized well
 * Extending capabilities was challenging
+]
 
-## What can solve many of these issues?
+.pull-right[
+![:scale 120%](img/tsdt_screenshot.png)
+]
+
+???
+
+* common theme: Use Shiny to give web UI front-end to sophisicated algorithms so those with no expertise in R can perform the analyses
 
 ---
 name: non-modules
