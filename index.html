@@ -38,6 +38,7 @@ layout: true
 # My Journey with Shiny
 
 .pull-left[
+.large[
 Early adopter when Shiny was released to CRAN
 
 __First efforts__: Small prototypes to showcase possibilities and [learn by doing](https://r-podcast.org/15)
@@ -45,6 +46,7 @@ __First efforts__: Small prototypes to showcase possibilities and [learn by doin
 <i class="fas  fa-rocket "></i> Ascend Joe Cheng's [ladder of enlightment](https://github.com/rstudio/ShinyDeveloperConference/blob/45737f1f3386fb3a9194c40f9a999b58f60971de/Reactivity/slides.Rmd#L233-L240) 
 
 Present day: Developer of __large and complex__ applications integrating multiple systems
+]
 ]
 
 .pull-right[
@@ -61,15 +63,17 @@ Present day: Developer of __large and complex__ applications integrating multipl
 # My First Attempt
 
 .pull-left[
+.large[
 Empower statisticians with little/no <i class="fab  fa-r-project " style="color:#384CB7;"></i> experience to perform subgroup identification based on [TSDT](https://cran.rstudio.com/web/packages/TSDT/) package
 
 🚧 Non-trivial requirements (persistent sessions, dynamic UI, HPC integration)
 
 __Difficulties__
 
-* Duplicated similar(ish) UI widgets across app
+* Duplicated similar(ish) UI widgets
 * Code not organized well
 * Extending capabilities was challenging
+]
 ]
 
 .pull-right[
@@ -138,10 +142,12 @@ class: inverse, clear, center, middle
 
 --
 
+.large[
 - Avoid namespace collisions when using same widget across different parts of your app
 - Allows you to encapsulate distinct app components
 - Organize code into logical and easy-to-understand components
 - Facilitates collaboration
+]
 
 --
 
@@ -149,8 +155,10 @@ class: inverse, clear, center, middle
 
 --
 
+.large[
 - <i class="fab  fa-r-project " style="color:#384CB7;"></i> functions also help avoid collisions in variable names with general R code
 - Essential for creating non-trivial and extensive workflows
+]
 
 ---
 
@@ -206,12 +214,13 @@ class: inverse, clear, center, top
 .center[
 ## Careful design
 
+.large[
 What does the module do?
 
 What is it trying to accomplish?
 
 🤔 What should I call this module?
-
+]
 ]
 ]
 
@@ -224,11 +233,13 @@ What is it trying to accomplish?
 .center[
 ## Inputs &amp; return values
 
+.large[
 Static or reactive input(s)?
 
 Complexity of return values 
 
 Which outputs serve as inputs for other modules?
+]
 ]
 ]
 
@@ -253,7 +264,7 @@ background-size: contain
 
 class: clear, center, bottom
 
-[rpodcast.shinyapps.io/ames_explorer](https://rpodcast.shinyapps.io/ames_explorer)
+[gallery.shinyapps.io/ames-explorer](https://gallery.shinyapps.io/ames-explorer)
 
 [github.com/rpodcast/ames_explorer](https://github.com/rpodcast/ames_explorer)
 
@@ -354,7 +365,9 @@ mod &lt;- function(input, output, session, plot1var) {
 --
 
 .pull-right[
+.large[
 `purrr::map()` takes __name__ of function as parameter, but __invokes__ function on each piece of supplied vector
+]
 
 ## How does this apply to modules?
 
@@ -392,12 +405,13 @@ mod &lt;- function(input, output, session, plot1var) {
 ]
 
 .pull-right[
-
+.large[
 Reactive parameters referenced by __name__: `plot1var`
 
 Inside module, __invoke__ reactive parameter as you would any other reactive in Shiny: `plot1var()`
 
 Any reactive(s) returned by module should also be referenced by __name__: `foo`, not `foo()` 
+]
 ]
 
 
@@ -437,11 +451,12 @@ scatterplot_server_mod &lt;- function(input, output, session, `dataset`, plot1va
 ]
 
 .right-column-small[
+.large[
 Why `dataset` and not `dataset()`?
 
 * `dataset` does not change within the application
 * Only need the __present__ value
-
+]
 ]
 
 ---
@@ -530,11 +545,13 @@ callModule(module2_mod, "id2", r_data)
 .pull-right[
 ## What could possibly go wrong?
 
+.large[
 * __Hidden State__: Difficult to pinpoint which module(s) impact `r_data` objects
 * Only certain objects from `r_data` are needed in a given module
 * Lose sight of the __contracts__ between modules
 
 __Perspective__: Passing environments back and forth between typical <i class="fab  fa-r-project " style="color:#384CB7;"></i> functions would be a bad idea too!
+]
 ]
 
 
@@ -547,20 +564,23 @@ class: inverse, clear, center, middle
 
 # You may already know...
 
+.large[
 * <i class="fab  fa-r-project " style="color:#384CB7;"></i> is well-suited for interactive workflows in data science
 * Functions become an essential building-block when moving from prototypes to non-trivial workflows
 * Define clear function inputs and return values for effective structure
+]
 
 --
 
 ## Is it any different when creating Shiny apps?  No!
 
+.large[
 Using modules combined with the principles discussed today is __essential__ to bring software engineering best practices to application development
 
 * Determine purpose of the module
 * Documentation for inputs and outputs 
 * Define the relationships between modules
-
+]
 ---
 
 # What's in it for me?
@@ -573,23 +593,26 @@ Using modules combined with the principles discussed today is __essential__ to b
 
 ## Organize application with distinct components
 
+.large[
 * Facilitates concurrent development within team
 * Easier to track down bugs in code
+]
 
 --
 
-## Best practices for R development translate well with modules
+## Best practices for <i class="fab  fa-r-project " style="color:#384CB7;"></i> development translate well with modules
 
 ---
 
 # Calls to action
 
+.large[
 Read the new article on [module communication best practices](http://shiny.rstudio.com/articles/communicate-bet-modules.html) at [shiny.rstudio.com](https://shiny.rstudio.com)
 * 👀 for more articles this year on additional module topics
 
-Review [Ames Housing Explorer app](https://rpodcast.shinyapps.io/ames_explorer) that demonstrates the principles discussed today and more.  
+Review [Ames Housing Explorer app](https://gallery.shinyapps.io/ames-explorer) that demonstrates the principles discussed today and more.  
 * Code available on <i class="fab  fa-github "></i>: [github.com/rpodcast/ames_explorer](https://github.com/rpodcast/ames_explorer)
-
+]
 
 --
 
@@ -625,7 +648,7 @@ Review [Ames Housing Explorer app](https://rpodcast.shinyapps.io/ames_explorer) 
   &lt;/tr&gt;&lt;/table&gt;
 ]
 
-.font110[
+.large[
 Other efforts in the <i class="fab  fa-r-project " style="color:#384CB7;"></i> community:
 * Contributor to [R Weekly](https://rweekly.org/)
 * [RStudio Community](https://community.rstudio.com/) sustainer
